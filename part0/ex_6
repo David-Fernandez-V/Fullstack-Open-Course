@@ -1,0 +1,18 @@
+``` mermaid
+sequenceDiagram
+    participant browser
+    participant server
+
+    browser->>browser: Executing the JavaScript code
+    Note right of browser: Browser creates the new note
+    Note right of browser: Browser appends it to note list
+    Note right of browser: Browser clens the form input
+    Note right of browser: Browser call the redrawNotes function to re-render the notes
+
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+    activate server
+    Note right of browser: Send note as an JSON object { "content": "HTML is easy", "date": "2023-1-1" }
+    server-->>browser: Status 201 Created.
+    deactivate server
+```
+    
