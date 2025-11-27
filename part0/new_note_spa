@@ -1,3 +1,4 @@
+``` mermaid
 sequenceDiagram
     participant browser
     participant server
@@ -5,9 +6,10 @@ sequenceDiagram
     browser->>browser: Ejecución del código JS
     Note right of browser: El código JS agrega la nueva nota al arreglo, refresca las notas y limpiar el formulario
 
-     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/new_note_spa
     activate server
     Note right of browser: Se envía la nota en formato JSON. por medio del código JS[{ "content": "HTML is easy", "date": "2023-1-1" }]
     server-->>browser: 201 Created.
     deactivate server
+```
     
