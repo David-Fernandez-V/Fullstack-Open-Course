@@ -1,18 +1,50 @@
 import { useState } from "react"
 
-const App = () => {
-  const [counter, setCounter] = useState(0)
+const Header = () => <h1>Unicafe</h1>
 
-  const handelClick = () =>{
-    setCounter(counter+1)
-    console.log("Clicked")
-  }
+const Button = ({text, onClick}) =>{
+  return (
+    <button onClick={onClick}>
+      {text}
+    </button>
+  )
+}
+
+const Statistics = ({good, neutral, bad}) => {
+  let all = good+bad+neutral
+  return(
+    <>
+      <h2>Statistics</h2>
+      <p>Good: {good}</p>
+      <p>Neutral: {neutral}</p>
+      <p>Bad: {bad}</p>
+      <p>All: {all}</p>
+      <p>Average: {(good-bad)/all}</p>
+      <p>Positive: {good*100/all}%</p>
+    </>
+  )
+}
+
+const Menu = () =>{
+  return(
+    <>
+
+    </>
+  )
+}
+
+const App = () => {
+  const [good, setGood] = useState(0)
+  const [neutral, setNeutral] = useState(0)
+  const [bad, setBad] = useState(0)
 
   return (
     <>
-      <div>{counter}</div>
-      <button onClick={handelClick}>+</button>
-      <button onClick={() => setCounter(counter-1)}>-</button>
+      <Header/>
+      <Button text={"Good"} onClick={()=>setGood(good+1)}/>
+      <Button text={"Neutral"} onClick={()=>setNeutral(neutral+1)}/>
+      <Button text={"Bad"} onClick={()=>setBad(bad+1)}/>
+      <Statistics good={good} neutral={neutral} bad={bad}/>
     </>
   )
 }
