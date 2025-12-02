@@ -28,22 +28,20 @@ function App() {
     setSelected(random)
   }
 
+  const refreshMostVoted = (newVotes) => {
+    let maxValue = Math.max(...newVotes)
+    let index = newVotes.indexOf(maxValue)
+    setMostVoted(index)
+    console.log("Most voted: "+index)
+  }
+
   const voteAnecdote = () => {
     let newVotes = [...votes]
-    let maxValue = 0;
-    let index = 0;
-
-
+  
     newVotes[selected] += 1
     setVotes(newVotes)
-
-    //Set most voted
-    maxValue = Math.max(...newVotes)
-    index = newVotes.indexOf(maxValue)
-    setMostVoted(index)
-
+    refreshMostVoted(newVotes)
     console.log("Votes: "+newVotes)
-    console.log("Most voted: "+index)
   }
 
   return (
