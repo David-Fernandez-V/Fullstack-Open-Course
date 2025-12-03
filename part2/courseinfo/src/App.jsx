@@ -14,11 +14,25 @@ const Content = ({ parts }) => (
   </div>
 );
 
+const Total = ({ parts }) => {
+  let total = parts.reduce((sum, part) => {
+    sum += part.exercises;
+    return sum;
+  }, 0);
+
+  return (
+    <p>
+      <strong>Total of {total} exercises</strong>
+    </p>
+  );
+};
+
 function Course({ course }) {
   return (
     <div>
       <Header course={course.name} />
       <Content parts={course.parts} />
+      <Total parts={course.parts} />
     </div>
   );
 }
