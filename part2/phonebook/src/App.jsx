@@ -11,37 +11,35 @@ const App = () => {
   const [search, setSearch] = useState("");
   const [showAllPersons, setShowAllPersons] = useState(true);
 
-  useEffect(() => {
-    PersonService.getAll().then((initialPersons) => {
-      setPersons(initialPersons);
-    });
-  }, []);
-
   const personsToShow = showAllPersons
     ? persons
     : persons.filter((p) =>
         p.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())
       );
 
-  const addPerson = (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    PersonService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
+    });
+  }, []);
 
-    if (persons.find((p) => p.name === newName)) {
-      alert(`${newName} is already added to the Phonebook`);
-      return;
+  const updatePerson = (id, personInfo) => {
+    if (
+      confirm(
+        `${newName} is already added to the Phonebook, replace the old number with a new one?`
+      )
+    ) {
+      PersonService.update(id, personInfo).then((newObject) => {
+        console.log(newObject);
+        setPersons(persons.map((p) => (p.id === id ? newObject : p)));
+        setNewName("");
+        setNewNumber("");
+      });
     }
+  };
 
-    if (persons.find((p) => p.number === newNumber)) {
-      alert(`${newNumber} is already added to the Phonebook`);
-      return;
-    }
-
-    const person = {
-      name: newName,
-      number: newNumber,
-    };
-
-    PersonService.create(person).then((newObject) => {
+  const addPerson = (personInfo) => {
+    PersonService.create(personInfo).then((newObject) => {
       setPersons(persons.concat(newObject));
       setNewName("");
       setNewNumber("");
@@ -57,7 +55,27 @@ const App = () => {
     }
   };
 
-  //Inputs
+  const handleButton = (e) => {
+    e.preventDefault();
+
+    const registeredNumber = persons.find((p) => p.number === newNumber);
+    const registeredPerson = persons.find((p) => p.name === newName);
+
+    const person = {
+      name: newName,
+      number: newNumber,
+    };
+
+    if (registeredNumber) {
+      alert(`${newNumber} is already added to the Phonebook`);
+    } else if (registeredPerson) {
+      updatePerson(registeredPerson.id, person);
+    } else {
+      addPerson(person);
+    }
+  };
+
+  //Inputs handlers
 
   const handleNameChange = (e) => {
     setNewName(e.target.value);
@@ -90,7 +108,7 @@ const App = () => {
         nameHandler={handleNameChange}
         numberValue={newNumber}
         numberHandler={handleNumberChange}
-        addPersonHandler={addPerson}
+        addPersonHandler={handleButton}
       />
 
       <h2>Numbers</h2>
