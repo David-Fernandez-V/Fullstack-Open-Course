@@ -30,7 +30,6 @@ const App = () => {
       )
     ) {
       PersonService.update(id, personInfo).then((newObject) => {
-        console.log(newObject);
         setPersons(persons.map((p) => (p.id === id ? newObject : p)));
         setNewName("");
         setNewNumber("");
