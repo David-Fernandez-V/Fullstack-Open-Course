@@ -3,6 +3,7 @@ import Filter from "./componets/Filter";
 import PersonForm from "./componets/PersonForm";
 import Persons from "./componets/Persons";
 import PersonService from "./services/persons";
+import Notification from "./componets/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -10,6 +11,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [search, setSearch] = useState("");
   const [showAllPersons, setShowAllPersons] = useState(true);
+  const [notificacionMessage, setNotificationMessage] = useState(null);
 
   const personsToShow = showAllPersons
     ? persons
@@ -23,6 +25,19 @@ const App = () => {
     });
   }, []);
 
+  const addPerson = (personInfo) => {
+    PersonService.create(personInfo).then((newObject) => {
+      setPersons(persons.concat(newObject));
+      setNewName("");
+      setNewNumber("");
+      //Notification
+      setNotificationMessage(`Added ${newObject.name}`);
+      setTimeout(() => {
+        setNotificationMessage(null);
+      }, 5000);
+    });
+  };
+
   const updatePerson = (id, personInfo) => {
     if (
       confirm(
@@ -33,16 +48,13 @@ const App = () => {
         setPersons(persons.map((p) => (p.id === id ? newObject : p)));
         setNewName("");
         setNewNumber("");
+        //notification
+        setNotificationMessage(`Modified ${newObject.name}`);
+        setTimeout(() => {
+          setNotificationMessage(null);
+        }, 5000);
       });
     }
-  };
-
-  const addPerson = (personInfo) => {
-    PersonService.create(personInfo).then((newObject) => {
-      setPersons(persons.concat(newObject));
-      setNewName("");
-      setNewNumber("");
-    });
   };
 
   const deletePerson = (personId) => {
@@ -97,7 +109,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
-
+      <Notification message={notificacionMessage} />
       <Filter value={search} handeler={handleFilterChange} />
 
       <h2>Add a new</h2>
