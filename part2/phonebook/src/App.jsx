@@ -12,11 +12,12 @@ const App = () => {
   const [search, setSearch] = useState("");
   const [showAllPersons, setShowAllPersons] = useState(true);
   const [notificacionMessage, setNotificationMessage] = useState(null);
+  const [notificationStatus, setNotificationStatus] = useState(null);
 
   const personsToShow = showAllPersons
     ? persons
     : persons.filter((p) =>
-        p.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())
+        p.name.toLocaleLowerCase().includes(search.toLocaleLowerCase()),
       );
 
   useEffect(() => {
@@ -31,9 +32,11 @@ const App = () => {
       setNewName("");
       setNewNumber("");
       //Notification
+      setNotificationStatus("success");
       setNotificationMessage(`Added ${newObject.name}`);
       setTimeout(() => {
         setNotificationMessage(null);
+        setNotificationStatus(null);
       }, 5000);
     });
   };
@@ -41,28 +44,46 @@ const App = () => {
   const updatePerson = (id, personInfo) => {
     if (
       confirm(
-        `${newName} is already added to the Phonebook, replace the old number with a new one?`
+        `${newName} is already added to the Phonebook, replace the old number with a new one?`,
       )
     ) {
-      PersonService.update(id, personInfo).then((newObject) => {
-        setPersons(persons.map((p) => (p.id === id ? newObject : p)));
-        setNewName("");
-        setNewNumber("");
-        //notification
-        setNotificationMessage(`Modified ${newObject.name}`);
-        setTimeout(() => {
-          setNotificationMessage(null);
-        }, 5000);
-      });
+      PersonService.update(id, personInfo)
+        .then((newObject) => {
+          setPersons(persons.map((p) => (p.id === id ? newObject : p)));
+          setNewName("");
+          setNewNumber("");
+          //notification
+          setNotificationStatus("success");
+          setNotificationMessage(`Modified ${newObject.name}`);
+          setTimeout(() => {
+            setNotificationMessage(null);
+            setNotificationStatus(null);
+          }, 5000);
+        })
+        .catch(() => {
+          setNotificationStatus("error");
+          setNotificationMessage(
+            `Information of ${personInfo.name} has already been removed from server`,
+          );
+          setTimeout(() => {
+            setNotificationMessage(null);
+            setNotificationStatus(null);
+          }, 5000);
+          setPersons(persons.filter((p) => p.id !== id));
+        });
     }
   };
 
   const deletePerson = (personId) => {
     const personToDelete = persons.find((p) => p.id === personId);
     if (window.confirm(`Delete ${personToDelete.name}?`)) {
-      PersonService.destroy(personId).then((newObject) => {
-        setPersons(persons.filter((p) => p.id !== newObject.id));
-      });
+      PersonService.destroy(personId)
+        .then((newObject) => {
+          setPersons(persons.filter((p) => p.id !== newObject.id));
+        })
+        .catch(() => {
+          setPersons(persons.filter((p) => p.id !== personId));
+        });
     }
   };
 
@@ -109,7 +130,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
-      <Notification message={notificacionMessage} />
+      <Notification message={notificacionMessage} status={notificationStatus} />
       <Filter value={search} handeler={handleFilterChange} />
 
       <h2>Add a new</h2>
