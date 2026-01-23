@@ -1,41 +1,55 @@
 import { useEffect } from "react";
 import { useState } from "react";
-import axios from "axios";
 
 import Countries from "./components/Countries";
 import Country from "./components/Country";
-
-const BASE_URL = "https://studies.cs.helsinki.fi/restcountries/api";
+import CountriesService from "./services/countries";
 
 function App() {
   const [countries, setCountries] = useState([]);
-  const [search, setSearch] = useState("");
+  const [countriesToShow, setCountriesToShow] = useState([]);
 
-  const countriesToShow = countries.filter((c) =>
-    c.name.common.toLowerCase().includes(search.toLowerCase()),
-  );
+  const country = countriesToShow.length === 1 ? countriesToShow[0] : null;
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/all`).then((response) => {
-      setCountries(response.data);
+    CountriesService.getAll().then((allCountries) => {
+      setCountries(allCountries);
     });
   }, []);
 
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
+  const handleSearch = (e) => {
+    const newEntry = e.target.value;
+
+    if (newEntry.length === 0) {
+      setCountriesToShow([]);
+    } else {
+      setCountriesToShow(
+        countries.filter((c) =>
+          c.name.common.toLowerCase().includes(newEntry.toLowerCase()),
+        ),
+      );
+    }
   };
+
+  const showCountry = (countryName) => {
+    setCountriesToShow(countries.filter((c) => c.name.common === countryName));
+  };
+
+  if (countries.length === 0) return <p>Loading...</p>;
 
   return (
     <>
       Find countries:
-      <input type="text" value={search} onChange={handleSearchChange} />
+      <input type="text" onChange={handleSearch} />
       <div>
-        {countriesToShow.length > 10 ? (
+        {countriesToShow.length === 0 ? (
+          <p>Enter a country</p>
+        ) : countriesToShow.length > 10 ? (
           <p>Too many matches, specify another filter</p>
-        ) : countriesToShow.length === 1 ? (
-          <Country country={countriesToShow[0]} />
+        ) : country ? (
+          <Country country={country} />
         ) : (
-          <Countries countries={countriesToShow} />
+          <Countries countries={countriesToShow} buttonHandler={showCountry} />
         )}
       </div>
     </>

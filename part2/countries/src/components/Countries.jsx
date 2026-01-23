@@ -1,8 +1,11 @@
-const Countries = ({ countries }) => {
+const Countries = ({ countries, buttonHandler }) => {
   return (
     <>
       {countries.map((c) => (
-        <p key={c.name.common}>{c.name.common}</p>
+        <div key={c.name.common}>
+          <div>{c.name.common}</div>
+          <button onClick={() => buttonHandler(c.name.common)}>Show</button>
+        </div>
       ))}
     </>
   );
