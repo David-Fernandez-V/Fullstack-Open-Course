@@ -1,4 +1,17 @@
+import { useEffect, useState } from "react";
+import WeatherService from "../services/weather";
+import Weather from "./Weather";
+
 function Country({ country }) {
+  const [weather, setWeather] = useState(null);
+
+  useEffect(() => {
+    if (!country) return;
+    WeatherService.getWeather(country.capital).then((weatherObject) =>
+      setWeather(weatherObject),
+    );
+  }, [country]);
+
   return (
     <div>
       {/*General info*/}
@@ -14,6 +27,8 @@ function Country({ country }) {
       </ul>
       {/*Flag*/}
       <img src={country.flags.png} />
+      {/*Weather*/}
+      <Weather countryCapital={country.capital} wheatherObject={weather} />
     </div>
   );
 }
