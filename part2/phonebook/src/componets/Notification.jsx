@@ -1,5 +1,5 @@
 const Notification = ({ message, status }) => {
-  if (message === null) {
+  if (!message) {
     return null;
   }
 
