@@ -1,6 +1,7 @@
 const express = require("express")
 const app = express()
 
+app.use(express.json())
 
 let persons = [
     { 
@@ -24,6 +25,15 @@ let persons = [
       "number": "39-23-6423122"
     }
 ]
+
+const generateId = () => {
+  return String(Math.floor(Math.random() * 1_000_000_000))
+}
+
+const isValidName = (name) => {
+  const existingPerson = persons.find(p => p.name === name)
+  return existingPerson ? false : true
+}
 
 app.get("/", (request, response) => {
     response.send("<h1>Phonebook API</h1>")
@@ -66,6 +76,45 @@ app.delete("/api/persons/:id", (request, response) => {
       error : "person not found"
     })
   }
+})
+
+app.post("/api/persons", (request, response) => {
+  const body = request.body
+  if(!body){
+    return response.status(400).json({
+      error : "content missing"
+    })
+  }
+
+  const name = body.name
+  const number = body.number
+  if(!name){
+    return response.status(400).json({
+      error : "name missing"
+    })
+  }
+
+  if(!number){
+    return response.status(400).json({
+      error : "number missing"
+    })
+  }
+
+  if(!isValidName(name)){
+    return response.status(400).json({
+      error : "name must be unique"
+    })
+  }
+
+  const person = {
+    id: generateId(),
+    name: name,
+    number: number,
+  }
+
+  persons = persons.concat(person)
+
+  response.json(person)
 })
 
 const PORT = 3001
