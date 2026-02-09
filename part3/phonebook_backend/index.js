@@ -1,7 +1,9 @@
 const express = require("express")
 const morgan = require("morgan")
+const cors = require("cors")
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 
 morgan.token('body', req => {
@@ -77,7 +79,8 @@ app.delete("/api/persons/:id", (request, response) => {
   
   if(person){
     persons = persons.filter(p => p.id !== person.id)
-    response.status(204).end()
+    response.json(person)
+    //response.status(204).end()
   }else{
     return response.status(404).json({
       error : "person not found"
