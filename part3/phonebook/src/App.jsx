@@ -79,7 +79,6 @@ const App = () => {
     if (window.confirm(`Delete ${personToDelete.name}?`)) {
       PersonService.destroy(personId)
         .then((newObject) => {
-          console.log(`Objeto recivido: ${newObject.name}`);
           setPersons(persons.filter((p) => p.id !== newObject.id));
         })
         .catch(() => {
