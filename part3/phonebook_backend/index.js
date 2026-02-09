@@ -80,7 +80,6 @@ app.delete("/api/persons/:id", (request, response) => {
   if(person){
     persons = persons.filter(p => p.id !== person.id)
     response.json(person)
-    //response.status(204).end()
   }else{
     return response.status(404).json({
       error : "person not found"
@@ -127,7 +126,9 @@ app.post("/api/persons", (request, response) => {
   response.json(person)
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
+
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
