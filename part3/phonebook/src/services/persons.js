@@ -1,24 +1,24 @@
-import axios from "axios"
-const baseUrl = `${import.meta.env.VITE_API_BASE_URL}/api/persons`
+import axios from "axios";
+const baseUrl = `${import.meta.env.VITE_API_BASE_URL}/api/persons`;
 
 const getAll = () => {
-    const request = axios.get(baseUrl)
-    return request.then(response => response.data)
-}
+  const request = axios.get(baseUrl);
+  return request.then((response) => response.data);
+};
 
 const create = (newPerson) => {
-    const request = axios.post(baseUrl, newPerson)
-    return request.then(response => response.data)
-}
+  const request = axios.post(baseUrl, newPerson);
+  return request.then((response) => response.data);
+};
 
 const update = (id, newPerson) => {
-    const request = axios.put(`${baseUrl}/${id}`, newPerson)
-    return request.then(response => response.data)
-}
+  const request = axios.put(`${baseUrl}/${id}`, newPerson);
+  return request.then((response) => response.data);
+};
 
 const destroy = (id) => {
-    const request = axios.delete(`${baseUrl}/${id}`)
-    return request.then(response => response.data)
-} 
+  const request = axios.delete(`${baseUrl}/${id}`);
+  return request.then((response) => response.data);
+};
 
-export default {getAll, create, update, destroy}
+export default { getAll, create, update, destroy };
