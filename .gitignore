@@ -1,3 +1,4 @@
 practicing/
 *node_modules
 *.env*
+*dist/
