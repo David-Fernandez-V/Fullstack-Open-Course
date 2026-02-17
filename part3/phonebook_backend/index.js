@@ -40,15 +40,6 @@ let persons = [
   },
 ];
 
-const generateId = () => {
-  return String(Math.floor(Math.random() * 1_000_000_000));
-};
-
-const isValidName = (name) => {
-  const existingPerson = persons.find((p) => p.name === name);
-  return existingPerson ? false : true;
-};
-
 app.get("/api", (request, response) => {
   response.send("<h1>Phonebook API</h1>");
 });
@@ -111,21 +102,14 @@ app.post("/api/persons", (request, response) => {
     });
   }
 
-  if (!isValidName(name)) {
-    return response.status(400).json({
-      error: "name must be unique",
-    });
-  }
-
-  const person = {
-    id: generateId(),
+  const person = new Person({
     name: name,
     number: number,
-  };
+  });
 
-  persons = persons.concat(person);
-
-  response.json(person);
+  person.save().then((savedPerson) => {
+    response.json(savedPerson);
+  });
 });
 
 const unknownEndpoint = (request, response) => {
