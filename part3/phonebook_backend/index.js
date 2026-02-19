@@ -110,6 +110,48 @@ app.post("/api/persons", (request, response, next) => {
     .catch((error) => next(error));
 });
 
+//Update person
+app.put("/api/persons/:id", (request, response, next) => {
+  const id = request.params.id;
+  const body = request.body;
+
+  if (!body) {
+    return response.status(400).json({
+      error: "content missing",
+    });
+  }
+
+  const name = body.name;
+  const number = body.number;
+
+  if (!name) {
+    return response.status(400).json({
+      error: "name missing",
+    });
+  }
+
+  if (!number) {
+    return response.status(400).json({
+      error: "number missing",
+    });
+  }
+
+  const person = {
+    name: name,
+    number: number,
+  };
+
+  Person.findByIdAndUpdate(id, person, { new: true })
+    .then((updatedPerson) => {
+      if (updatedPerson) {
+        response.json(updatedPerson);
+      } else {
+        response.status(404).json({ error: "person not found" });
+      }
+    })
+    .catch((error) => next(error));
+});
+
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: "unknown endpoint" });
 };
