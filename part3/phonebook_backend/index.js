@@ -44,6 +44,7 @@ app.get("/api", (request, response) => {
   response.send("<h1>Phonebook API</h1>");
 });
 
+//Get info
 app.get("/api/info", (request, response) => {
   Person.find({}).then((persons) => {
     const date = new Date();
@@ -54,12 +55,14 @@ app.get("/api/info", (request, response) => {
   });
 });
 
+//Get All persons
 app.get("/api/persons", (request, response) => {
   Person.find({}).then((persons) => {
     response.json(persons);
   });
 });
 
+//Get person by ID
 app.get("/api/persons/:id", (request, response) => {
   const id = request.params.id;
   Person.findById(id).then((person) => {
@@ -67,19 +70,24 @@ app.get("/api/persons/:id", (request, response) => {
   });
 });
 
-app.delete("/api/persons/:id", (request, response) => {
-  const person = persons.find((p) => p.id === request.params.id);
+//Delete person
+app.delete("/api/persons/:id", (request, response, next) => {
+  const id = request.params.id;
 
-  if (person) {
-    persons = persons.filter((p) => p.id !== person.id);
-    response.json(person);
-  } else {
-    return response.status(404).json({
-      error: "person not found",
+  Person.findByIdAndDelete(id)
+    .then((deletedPerson) => {
+      if (deletedPerson) {
+        response.json(deletedPerson);
+      } else {
+        response.status(404).json({ error: "person not found" });
+      }
+    })
+    .catch((error) => {
+      next(error);
     });
-  }
 });
 
+//Update person
 app.post("/api/persons", (request, response) => {
   const body = request.body;
   if (!body) {
