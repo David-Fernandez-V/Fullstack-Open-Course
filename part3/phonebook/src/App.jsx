@@ -27,18 +27,27 @@ const App = () => {
   }, []);
 
   const addPerson = (personInfo) => {
-    PersonService.create(personInfo).then((newObject) => {
-      setPersons(persons.concat(newObject));
-      setNewName("");
-      setNewNumber("");
-      //Notification
-      setNotificationStatus("success");
-      setNotificationMessage(`Added ${newObject.name}`);
-      setTimeout(() => {
-        setNotificationMessage(null);
-        setNotificationStatus(null);
-      }, 5000);
-    });
+    PersonService.create(personInfo)
+      .then((newObject) => {
+        setPersons(persons.concat(newObject));
+        setNewName("");
+        setNewNumber("");
+        setNotificationStatus("success");
+        setNotificationMessage(`Added ${newObject.name}`);
+        setTimeout(() => {
+          setNotificationMessage(null);
+          setNotificationStatus(null);
+        }, 5000);
+      })
+      .catch((error) => {
+        console.log(error.response.data.error);
+        setNotificationStatus("error");
+        setNotificationMessage(error.response.data.error);
+        setTimeout(() => {
+          setNotificationMessage(null);
+          setNotificationStatus(null);
+        }, 5000);
+      });
   };
 
   const updatePerson = (id, personInfo) => {
