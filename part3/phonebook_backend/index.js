@@ -31,11 +31,11 @@ app.get("/api/info", (request, response, next) => {
         <p>${date}</p>
     `);
     })
-    .catch((error) => error);
+    .catch((error) => next(error));
 });
 
 //Get All persons
-app.get("/api/persons", (request, response) => {
+app.get("/api/persons", (request, response, next) => {
   Person.find({})
     .then((persons) => {
       response.json(persons);
