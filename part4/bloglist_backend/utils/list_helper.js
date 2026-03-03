@@ -21,8 +21,24 @@ const favoriteBlog = (blogs) => {
   };
 };
 
+const mostBlogs = (blogs) => {
+  if (blogs.length === 0) return null;
+
+  const count = {};
+
+  blogs.forEach((blog) => {
+    count[blog.author] = (count[blog.author] || 0) + 1;
+  });
+
+  return Object.entries(count).reduce(
+    (max, [author, blogs]) => (blogs > max.blogs ? { author, blogs } : max),
+    { author: null, blogs: 0 },
+  );
+};
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
+  mostBlogs,
 };

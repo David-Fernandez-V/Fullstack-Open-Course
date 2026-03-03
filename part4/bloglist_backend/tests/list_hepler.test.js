@@ -1,6 +1,11 @@
 const { test, describe } = require("node:test");
 const assert = require("node:assert");
-const { dummy, totalLikes, favoriteBlog } = require("../utils/list_helper");
+const {
+  dummy,
+  totalLikes,
+  favoriteBlog,
+  mostBlogs,
+} = require("../utils/list_helper");
 
 const listWithOneBlog = [
   {
@@ -63,6 +68,13 @@ const blogs = [
     __v: 0,
   },
 ];
+
+test("Mots blogs", () => {
+  assert.deepStrictEqual(mostBlogs(blogs), {
+    author: "Robert C. Martin",
+    blogs: 3,
+  });
+});
 
 test("dummy returns one", () => {
   const blogs = [];
