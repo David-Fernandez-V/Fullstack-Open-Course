@@ -69,13 +69,6 @@ const blogs = [
   },
 ];
 
-test("Mots blogs", () => {
-  assert.deepStrictEqual(mostBlogs(blogs), {
-    author: "Robert C. Martin",
-    blogs: 3,
-  });
-});
-
 test("dummy returns one", () => {
   const blogs = [];
 
@@ -115,6 +108,26 @@ describe("Favorite Blog", () => {
       title: "Canonical string reduction",
       author: "Edsger W. Dijkstra",
       likes: 12,
+    });
+  });
+});
+
+describe("Most blogs", () => {
+  test("of empty list is null", () => {
+    assert.deepStrictEqual(mostBlogs([]), null);
+  });
+
+  test("when list has only one blog equals the author of that blog", () => {
+    assert.deepStrictEqual(mostBlogs(listWithOneBlog), {
+      author: "Edsger W. Dijkstra",
+      blogs: 1,
+    });
+  });
+
+  test("of a bigger list is calculated right", () => {
+    assert.deepStrictEqual(mostBlogs(blogs), {
+      author: "Robert C. Martin",
+      blogs: 3,
     });
   });
 });

@@ -1,3 +1,5 @@
+const _ = require("lodash");
+
 const dummy = (blogs) => {
   console.log("Total blogs: ", blogs.length);
   return 1;
@@ -24,16 +26,13 @@ const favoriteBlog = (blogs) => {
 const mostBlogs = (blogs) => {
   if (blogs.length === 0) return null;
 
-  const count = {};
+  const highest = _.chain(blogs)
+    .countBy("author")
+    .toPairs()
+    .maxBy(([, count]) => count)
+    .value();
 
-  blogs.forEach((blog) => {
-    count[blog.author] = (count[blog.author] || 0) + 1;
-  });
-
-  return Object.entries(count).reduce(
-    (max, [author, blogs]) => (blogs > max.blogs ? { author, blogs } : max),
-    { author: null, blogs: 0 },
-  );
+  return { author: highest[0], blogs: highest[1] };
 };
 
 module.exports = {
