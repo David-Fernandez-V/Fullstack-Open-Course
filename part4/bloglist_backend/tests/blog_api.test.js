@@ -27,6 +27,10 @@ test("All blogs are returned as json", async () => {
   assert.strictEqual(response.body.length, initialBlogs.length);
 });
 
+test("The unique identifier for blogs is called id (not _id)", async () => {
+  //...
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
