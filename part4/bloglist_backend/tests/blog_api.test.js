@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 
 const app = require("../app");
 const Blog = require("../models/blog");
-const { initialBlogs } = require("./test_helper");
+const { initialBlogs, blogsInDb } = require("./test_helper");
 
 const api = supertest(app);
 
@@ -34,6 +34,29 @@ test("The unique identifier for blogs is called id (not _id)", async () => {
     assert(Object.keys(blog).includes("id"));
     assert(!Object.keys(blog).includes("_id"));
   });
+});
+
+test("A valid blog can be added", async () => {
+  const newBlog = {
+    title: "Deep Dive Into Modern Web Development",
+    author: "Matti Luukkainen",
+    url: "https://fullstackopen.com/en/",
+    likes: 7,
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const blogsAtEnd = await blogsInDb();
+  assert.strictEqual(initialBlogs.length + 1, blogsAtEnd.length);
+
+  const addedBlog = blogsAtEnd.find((blog) => {
+    return blog.title === newBlog.title && blog.author === newBlog.author;
+  });
+  assert(addedBlog);
 });
 
 after(async () => {
