@@ -28,7 +28,12 @@ test("All blogs are returned as json", async () => {
 });
 
 test("The unique identifier for blogs is called id (not _id)", async () => {
-  //...
+  const response = await api.get("/api/blogs");
+
+  response.body.forEach((blog) => {
+    assert(Object.keys(blog).includes("id"));
+    assert(!Object.keys(blog).includes("_id"));
+  });
 });
 
 after(async () => {
