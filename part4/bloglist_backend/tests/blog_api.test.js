@@ -59,7 +59,7 @@ test("A valid blog can be added", async () => {
   assert(addedBlog);
 });
 
-test("If likes property is missing will have the value of 0", async () => {
+test("If the likes property is missing, the default value is 0", async () => {
   const newBlog = {
     title: "Deep Dive Into Modern Web Development",
     author: "Matti Luukkainen",
@@ -69,6 +69,23 @@ test("If likes property is missing will have the value of 0", async () => {
   const response = await api.post("/api/blogs").send(newBlog);
 
   assert.strictEqual(response.body.likes, 0);
+});
+
+test("If title or url properties are missing, the request code is 400 Bad Request", async () => {
+  const newBlog1 = {
+    author: "Matti Luukkainen",
+    url: "https://fullstackopen.com/en/",
+    likes: 7,
+  };
+
+  const newBlog2 = {
+    title: "Deep Dive Into Modern Web Development",
+    author: "Matti Luukkainen",
+    likes: 8,
+  };
+
+  await api.post("/api/blogs").send(newBlog1).expect(400);
+  await api.post("/api/blogs").send(newBlog2).expect(400);
 });
 
 after(async () => {
