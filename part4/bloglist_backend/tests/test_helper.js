@@ -49,11 +49,14 @@ const listWithOneBlog = [
 ];
 
 const nonExistingId = async () => {
-  const note = new Blog({ content: "willremovethissoon" });
-  await note.save();
-  await note.deleteOne();
+  const blog = new Blog({
+    title: "willremovethissoon",
+    url: "willremovethissoon",
+  });
+  await blog.save();
+  await blog.deleteOne();
 
-  return note._id.toString();
+  return blog._id.toString();
 };
 
 const blogsInDb = async () => {
