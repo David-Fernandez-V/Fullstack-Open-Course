@@ -4,7 +4,7 @@ const supertest = require("supertest");
 const mongoose = require("mongoose");
 
 const app = require("../app");
-const Blog = require("../models/blog");
+const Blog = require("../models/blogs");
 const { initialBlogs, blogsInDb, nonExistingId } = require("./test_helper");
 
 const api = supertest(app);

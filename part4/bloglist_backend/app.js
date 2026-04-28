@@ -8,7 +8,7 @@ const {
   unknownEndpoint,
   errorHandler,
 } = require("./utils/middleware");
-const blogRouter = require("./controllers/blog");
+const blogRouter = require("./controllers/blogs");
 
 const app = express();
 mongoose.set("strictQuery", false);
