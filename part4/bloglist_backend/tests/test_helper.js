@@ -1,4 +1,5 @@
 const Blog = require("../models/blogs");
+const User = require("../models/users");
 
 const initialBlogs = [
   {
@@ -64,4 +65,27 @@ const blogsInDb = async () => {
   return blogs.map((note) => note.toJSON());
 };
 
-module.exports = { initialBlogs, listWithOneBlog, nonExistingId, blogsInDb };
+const usersInDb = async () => {
+  const users = await User.find({});
+  return users.map((u) => u.toJSON());
+};
+
+const existingUser = async () => {
+  const user = new User({
+    username: "NoteTester",
+    name: "tester",
+    password: "root",
+  });
+  await user.save();
+
+  return user._id.toString();
+};
+
+module.exports = {
+  initialBlogs,
+  listWithOneBlog,
+  nonExistingId,
+  blogsInDb,
+  usersInDb,
+  existingUser,
+};
