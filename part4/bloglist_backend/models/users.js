@@ -13,6 +13,12 @@ const userSchema = new mongoose.Schema({
     required: true,
     minLength: 3,
   },
+  blogs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Blog",
+    },
+  ],
 });
 
 userSchema.set("toJSON", {
@@ -24,4 +30,6 @@ userSchema.set("toJSON", {
   },
 });
 
-module.exports = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
+
+module.exports = User;
