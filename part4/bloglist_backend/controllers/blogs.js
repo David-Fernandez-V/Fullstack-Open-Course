@@ -15,12 +15,11 @@ blogRouter.get("/", async (request, response) => {
 //Create blog
 blogRouter.post("/", async (request, response) => {
   const body = request.body;
-
   const decodedToken = jwt.verify(request.token, process.env.SECRET);
+
   if (!decodedToken.id) {
     return response(401).json({ error: "token invalid" });
   }
-
   const user = await User.findById(decodedToken.id);
 
   if (!user) {
@@ -46,14 +45,21 @@ blogRouter.post("/", async (request, response) => {
 
 //Delete blog
 blogRouter.delete("/:id", async (request, response) => {
-  const id = request.params.id;
+  const blogId = request.params.id;
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+  if (!decodedToken.id) {
+    return response(401).json({ error: "token invalid" });
+  }
 
-  const deletedBlog = await Blog.findByIdAndDelete(id);
+  const deletedBlog = await Blog.findOneAndDelete({
+    _id: blogId,
+    user: decodedToken.id,
+  });
 
   if (deletedBlog) {
-    response.status(204).end();
+    response.status(200).json(deletedBlog);
   } else {
-    response.status(404).end();
+    response.status(404).json({ error: "blog not found or not owned by user" });
   }
 });
 
@@ -71,7 +77,7 @@ blogRouter.put("/:id", async (request, response) => {
   if (updatedBlog) {
     response.json(updatedBlog);
   } else {
-    response.status(404).end();
+    response.status(404).json({ error: "blog not found" });
   }
 });
 
