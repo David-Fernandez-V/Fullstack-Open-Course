@@ -49,6 +49,19 @@ const listWithOneBlog = [
   },
 ];
 
+const initialUsers = [
+  {
+    username: "BlogTester",
+    name: "tester",
+    password: "root",
+  },
+  {
+    username: "BlogTester 2",
+    name: "tester 2",
+    password: "root",
+  },
+];
+
 const nonExistingId = async () => {
   const blog = new Blog({
     title: "willremovethissoon",
@@ -70,22 +83,11 @@ const usersInDb = async () => {
   return users.map((u) => u.toJSON());
 };
 
-const existingUser = async () => {
-  const user = new User({
-    username: "NoteTester",
-    name: "tester",
-    password: "root",
-  });
-  await user.save();
-
-  return user._id.toString();
-};
-
 module.exports = {
   initialBlogs,
   listWithOneBlog,
+  initialUsers,
   nonExistingId,
   blogsInDb,
   usersInDb,
-  existingUser,
 };

@@ -51,18 +51,22 @@ blogRouter.delete("/:id", userExtractor, async (request, response) => {
 });
 
 //update blog
-blogRouter.put("/:id", async (request, response) => {
-  const id = request.params.id;
+blogRouter.put("/:id", userExtractor, async (request, response) => {
+  const blogId = request.params.id;
+  const user = request.user;
   const { title, author, url, likes } = request.body;
 
-  const updatedBlog = await Blog.findByIdAndUpdate(
-    id,
+  const updatedBlog = await Blog.findOneAndUpdate(
+    {
+      _id: blogId,
+      user: user.id,
+    },
     { title, author, url, likes },
     { new: true, runValidators: true, context: "query" },
   );
 
   if (updatedBlog) {
-    response.json(updatedBlog);
+    response.status(200).json(updatedBlog);
   } else {
     response.status(404).json({ error: "blog not found" });
   }

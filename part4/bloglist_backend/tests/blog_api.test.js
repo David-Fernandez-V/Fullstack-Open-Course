@@ -5,18 +5,41 @@ const mongoose = require("mongoose");
 
 const app = require("../app");
 const Blog = require("../models/blogs");
-const { initialBlogs, blogsInDb, nonExistingId } = require("./test_helper");
+const User = require("../models/users");
+const {
+  initialBlogs,
+  initialUsers,
+  blogsInDb,
+  nonExistingId,
+} = require("./test_helper");
 
 const api = supertest(app);
+
+let token = undefined;
 
 describe("when there is initially some blogs saved", () => {
   beforeEach(async () => {
     await Blog.deleteMany({});
+    await User.deleteMany({});
+
+    const user = await api.post("/api/users").send(initialUsers[0]).expect(201);
 
     for (let blog of initialBlogs) {
-      let blogObject = new Blog(blog);
+      let blogObject = new Blog({ ...blog, user: user.body.id });
       await blogObject.save();
     }
+
+    const session = {
+      username: initialUsers[0].username,
+      password: initialUsers[0].password,
+    };
+
+    const loginResponse = await api
+      .post("/api/login")
+      .send(session)
+      .expect(200);
+
+    token = loginResponse.body.token;
   });
 
   test("All blogs are returned as json", async () => {
@@ -49,6 +72,7 @@ describe("when there is initially some blogs saved", () => {
       await api
         .post("/api/blogs")
         .send(newBlog)
+        .set("Authorization", `Bearer ${token}`)
         .expect(201)
         .expect("Content-Type", /application\/json/);
 
@@ -68,9 +92,23 @@ describe("when there is initially some blogs saved", () => {
         url: "https://fullstackopen.com/en/",
       };
 
-      const response = await api.post("/api/blogs").send(newBlog);
+      const response = await api
+        .post("/api/blogs")
+        .send(newBlog)
+        .set("Authorization", `Bearer ${token}`);
 
       assert.strictEqual(response.body.likes, 0);
+    });
+
+    test("fails with statuscode 401 if a token is not provided", async () => {
+      const newBlog = {
+        title: "Deep Dive Into Modern Web Development",
+        author: "Matti Luukkainen",
+        url: "https://fullstackopen.com/en/",
+        likes: 7,
+      };
+
+      await api.post("/api/blogs").send(newBlog).expect(401);
     });
 
     test("fails with statuscode 400 if title or url properties are missing", async () => {
@@ -86,17 +124,28 @@ describe("when there is initially some blogs saved", () => {
         likes: 8,
       };
 
-      await api.post("/api/blogs").send(newBlog1).expect(400);
-      await api.post("/api/blogs").send(newBlog2).expect(400);
+      await api
+        .post("/api/blogs")
+        .send(newBlog1)
+        .set("Authorization", `Bearer ${token}`)
+        .expect(400);
+      await api
+        .post("/api/blogs")
+        .send(newBlog2)
+        .set("Authorization", `Bearer ${token}`)
+        .expect(400);
     });
   });
 
-  describe("Deletion of a note", () => {
+  describe("Deletion of a blog", () => {
     test("succeeds with valid id", async () => {
       const blogsAtStart = await blogsInDb();
       const blogToDelete = blogsAtStart[0];
 
-      await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+      await api
+        .delete(`/api/blogs/${blogToDelete.id}`)
+        .set("Authorization", `Bearer ${token}`)
+        .expect(200);
 
       const blogsAtEnd = await blogsInDb();
 
@@ -105,12 +154,18 @@ describe("when there is initially some blogs saved", () => {
 
     test("fails with statuscode 400 id invalid", async () => {
       const invalidId = "5a3d5da59070081a82a3445";
-      await api.delete(`/api/blogs/${invalidId}`).expect(400);
+      await api
+        .delete(`/api/blogs/${invalidId}`)
+        .set("Authorization", `Bearer ${token}`)
+        .expect(400);
     });
 
     test("fails with statuscode 404 if blog does not exist", async () => {
       const validNonexistingId = await nonExistingId();
-      await api.delete(`/api/blogs/${validNonexistingId}`).expect(404);
+      await api
+        .delete(`/api/blogs/${validNonexistingId}`)
+        .set("Authorization", `Bearer ${token}`)
+        .expect(404);
     });
   });
 
@@ -126,6 +181,7 @@ describe("when there is initially some blogs saved", () => {
       const response = await api
         .put(`/api/blogs/${updatedData.id}`)
         .send(updatedData)
+        .set("Authorization", `Bearer ${token}`)
         .expect(200);
 
       assert.strictEqual(response.body.likes, blogToUpdate.likes + 1);
@@ -140,7 +196,11 @@ describe("when there is initially some blogs saved", () => {
       };
       const invalidId = "5a3d5da59070081a82a3445";
 
-      await api.delete(`/api/blogs/${invalidId}`).send(updatedData).expect(400);
+      await api
+        .delete(`/api/blogs/${invalidId}`)
+        .send(updatedData)
+        .set("Authorization", `Bearer ${token}`)
+        .expect(400);
     });
 
     test("fails with statuscode 404 if blog does not exist", async () => {
@@ -154,6 +214,7 @@ describe("when there is initially some blogs saved", () => {
       await api
         .delete(`/api/blogs/${validNonexistingId}`)
         .send(updatedData)
+        .set("Authorization", `Bearer ${token}`)
         .expect(404);
     });
   });
